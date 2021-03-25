@@ -1,8 +1,28 @@
-import Vue from 'vue'
-import App from './App.vue'
+import Vue from "vue";
+import VueRouter from "vue-router";
+import Vuikit from "vuikit";
+import VuikitIcons from "@vuikit/icons";
+import "@vuikit/theme";
 
-Vue.config.productionTip = false
+import App from "./App.vue";
+import Login from "./components/Login.vue";
+import Sistema from "./components/Sistema.vue";
+
+const routes = [
+  { path: '/', component: Login },
+  { path: '/sistema', component: Sistema },
+]
+const router = new VueRouter({
+  routes 
+})
+
+Vue.use(Vuikit);
+Vue.use(VuikitIcons);
+Vue.use(VueRouter);
+
+Vue.config.productionTip = false;
 
 new Vue({
-  render: h => h(App),
-}).$mount('#app')
+  router,
+  render: (h) => h(App),
+}).$mount("#app");
