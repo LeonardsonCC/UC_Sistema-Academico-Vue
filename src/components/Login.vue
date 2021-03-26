@@ -24,6 +24,7 @@
           <vk-button @click="login" type="primary" class="uk-width-1-1"
             >Entrar</vk-button
           >
+          <vk-notification status="danger" :messages.sync="messages"></vk-notification>
         </fieldset>
       </form>
     </vk-grid>
@@ -37,12 +38,17 @@ export default {
     return {
       email: "",
       pass: "",
+      messages:[]
     };
   },
   methods: {
     login: function() {
-      if (this.email == "admin" && this.senha == "123")
+      if (this.email == "admin" && this.pass == "123"){
         this.$router.push("sistema");
+      }
+      else{
+          this.messages.push('Usuário ou senha incorretos!');
+      }
     },
   },
 };
