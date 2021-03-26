@@ -20,15 +20,13 @@
               class="uk-input uk-form-width-large"
               type="number"
               id="nome"
-              v-model="novoAluno.notaAtual"
+              v-model="notaAtual"
               name="nome"
               placeholder="Nota"
             />
           </div>
           <vk-button type="primary" @click="addNota">Adicionar nota</vk-button>
-          <vk-button type="primary" @click="addAluno"
-            >Adicionar aluno</vk-button
-          >
+          <vk-notification status="danger" :messages.sync="messages"></vk-notification>
         </div>
       </fieldset>
     </form>
@@ -68,24 +66,35 @@ export default {
   data: () => {
     return {
       alunos: [],
+      notaAtual: 0,
       novoAluno: {
         nome: "",
-        notaAtual: 0,
         notas: [],
       },
+      messages:[]
     };
   },
   methods: {
     addNota: function() {
-      this.novoAluno.notas.push(this.novoAluno.notaAtual);
-      this.novoAluno.notaAtual = 0;
+      if(this.notaAtual <= 10 && this.notaAtual >= 0){
+        var aluno = this.alunos.find(obj => obj.nome === this.novoAluno.nome);
+        if(aluno){
+          aluno.notas.push(this.notaAtual);
+          this.notaAtual = 0;
+        }
+        else{
+          this.novoAluno.notas.push(this.notaAtual);
+          this.notaAtual = 0;
+
+          this.addAluno();
+        }
+      }
+      else{
+         this.messages.push("A nota deve ser de 0 a 10!");
+      }
     },
     addAluno: function() {
-      this.addNota();
-
       this.alunos.push({ ...this.novoAluno });
-      this.novoAluno.nome = "";
-      this.novoAluno.notaAtual = 0;
       this.novoAluno.notas = [];
     },
   },
