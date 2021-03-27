@@ -8,6 +8,7 @@
           <div class="uk-margin">
             <input
               class="uk-input"
+              id="login"
               v-model="email"
               type="text"
               placeholder="Login"
@@ -16,12 +17,13 @@
           <div class="uk-margin">
             <input
               class="uk-input"
+              id="senha"
               v-model="pass"
               type="password"
               placeholder="Senha"
             />
           </div>
-          <vk-button @click="login" type="primary" class="uk-width-1-1"
+          <vk-button @click="login" type="primary" id="logar" class="uk-width-1-1"
             >Entrar</vk-button
           >
           <vk-notification status="danger" :messages.sync="messages"></vk-notification>
@@ -47,7 +49,7 @@ export default {
         this.$router.push("sistema");
       }
       else{
-          this.messages.push('Usuário ou senha incorretos!');
+        this.messages.push('Usuário ou senha incorretos!');
       }
     },
   },
