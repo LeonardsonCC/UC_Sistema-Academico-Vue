@@ -19,13 +19,13 @@
             <input
               class="uk-input uk-form-width-large"
               type="number"
-              id="nome"
+              id="nota"
               v-model="notaAtual"
               name="nome"
               placeholder="Nota"
             />
           </div>
-          <vk-button type="primary" @click="addNota">Adicionar nota</vk-button>
+          <vk-button id="adicionar" type="primary" @click="addNota">Adicionar nota</vk-button>
           <vk-notification status="danger" :messages.sync="messages"></vk-notification>
         </div>
       </fieldset>
@@ -77,16 +77,21 @@ export default {
   methods: {
     addNota: function() {
       if(this.notaAtual <= 10 && this.notaAtual >= 0){
-        var aluno = this.alunos.find(obj => obj.nome === this.novoAluno.nome);
-        if(aluno){
-          aluno.notas.push(this.notaAtual);
-          this.notaAtual = 0;
+        if(this.novoAluno.nome === ""){
+          this.messages.push("O nome do aluno não pode ser vazio!");
         }
         else{
-          this.novoAluno.notas.push(this.notaAtual);
-          this.notaAtual = 0;
+          var aluno = this.alunos.find(obj => obj.nome === this.novoAluno.nome);
+          if(aluno){
+            aluno.notas.push(this.notaAtual);
+            this.notaAtual = 0;
+          }
+          else{
+            this.novoAluno.notas.push(this.notaAtual);
+            this.notaAtual = 0;
 
-          this.addAluno();
+            this.addAluno();
+          }
         }
       }
       else{
