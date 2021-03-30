@@ -77,8 +77,8 @@ export default {
   methods: {
     addNota: function() {
       if(this.notaAtual <= 10 && this.notaAtual >= 0){
-        if(this.novoAluno.nome === ""){
-          this.messages.push("O nome do aluno não pode ser vazio!");
+        if(this.novoAluno.nome === "" || this.notaAtual === ""){
+          this.messages.push("O nome do aluno ou a nota não podem ser vazios!");
         }
         else{
           var aluno = this.alunos.find(obj => obj.nome === this.novoAluno.nome);

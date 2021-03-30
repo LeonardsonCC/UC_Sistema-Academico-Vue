@@ -1,7 +1,19 @@
 import unittest
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-#from time import sleep
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from time import sleep
+
+def thereIsNotification(self):
+    element_present = EC.presence_of_element_located((By.CLASS_NAME, 'uk-notification-message'))
+    WebDriverWait(self.driver, 1).until(element_present)
+
+    self.driver.execute_script('document.getElementsByClassName("uk-close")[0].click()')
+    
+    element_invisible = EC.invisibility_of_element((By.CLASS_NAME, 'uk-notification-message'))
+    WebDriverWait(self.driver, 2).until(element_invisible)
 
 class TestLogin(unittest.TestCase):
 
@@ -22,12 +34,13 @@ class TestLogin(unittest.TestCase):
         self.login.send_keys("admin")
         self.senha.send_keys("1234")
         self.botao.click()
-        message = self.driver.find_elements_by_class_name("uk-notification-message")
-        current_url = self.driver.current_url
-        if(message):
-            message = True
-        self.assertTrue(message, "Deveria mostrar um aviso")
-        self.assertEqual(self.url, current_url, "Não deveria mudar de URL")
+        try:
+            thereIsNotification(self)
+
+            current_url = self.driver.current_url
+            self.assertEqual(self.url, current_url, "Não deveria mudar de URL")
+        except TimeoutException:
+            self.assertTrue(False, "Deveria mostrar um aviso!")
 
     def test_valid(self):
         '''
@@ -54,6 +67,9 @@ class TestNota(unittest.TestCase):
 
     @classmethod
     def tearDown(self):
+        '''
+        Método executado após cada teste ser finalizado
+        '''
         self.nome.clear()
         self.nota.clear()
 
@@ -61,13 +77,48 @@ class TestNota(unittest.TestCase):
         '''
         Testa se o sistema mostra um aviso quando uma nota inválida é submetida
         '''
-        pass
+        self.nome.send_keys("Gadolínio")
+        self.nota.clear()
+        self.nota.send_keys(64)
+        self.botao.click()
+        try:
+            thereIsNotification(self)
+        except TimeoutException:
+            self.assertTrue(False, "Deveria mostrar um aviso! (Nota acima de 10)")
+            
+        self.nota.clear()
+        self.nota.send_keys(-1)
+        self.botao.click()
 
-    def test2_empty_Data(self):
+        try:
+            thereIsNotification(self)
+        except TimeoutException:
+            self.assertTrue(False, "Deveria mostrar um aviso! (Nota abaixo de 0)")
+
+
+    def test2_empty_data(self):
         '''
         Testa se o sistema mostra um aviso quando o nome do aluno ou a nota estão vazios
         '''
-        pass
+        self.nome.send_keys(Keys.SPACE, Keys.BACK_SPACE);
+        self.nome.clear()
+        self.nota.send_keys(Keys.SPACE, Keys.BACK_SPACE);
+        self.nota.clear()
+        self.nota.send_keys(9);
+        self.botao.click()
+        try:
+            thereIsNotification(self)
+        except TimeoutException:
+            self.assertTrue(False, "Deveria mostrar um aviso! (Nome vazio)")
+            
+        self.nome.send_keys("Gadolínio");
+        self.nota.send_keys(Keys.SPACE, Keys.BACK_SPACE);
+        self.nota.clear()
+        self.botao.click()
+        try:
+            thereIsNotification(self)
+        except TimeoutException:
+            self.assertTrue(False, "Deveria mostrar um aviso! (Nota vazia)")
 
     def test3_add_grade(self):
         '''
@@ -134,5 +185,4 @@ class TestNota(unittest.TestCase):
         td_media = self.driver.find_element_by_css_selector("tr:nth-of-type(1) > td:nth-of-type(3)")
 
         content_media = "" if td_media is None else td_media.text
-
         self.assertEqual("5.5", content_media, "Deveria ter calculado a média corretamente!")
